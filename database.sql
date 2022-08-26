@@ -4,10 +4,6 @@ CREATE TABLE school(
 );
 
 
-insert into school(name) values("39-maktab");
-insert into school(name) values("40-maktab");
-insert into school(name) values("41-maktab");
-insert into school(name) values("42-maktab");
 
 
 CREATE TABLE classRoom(
@@ -15,9 +11,6 @@ CREATE TABLE classRoom(
   roomNumber VARCHAR(60),
   school_id BIGINT REFERENCES school(id) NOT NULL
 );
-insert into school(roomNumber,school_id) values("2-qavat 5-xona", 1);
-insert into school(roomNumber,school_id) values("3-qavat 6-xona", 2);
-insert into school(roomNumber,school_id) values("1-qavat 3-xona", 3);
 
 
 CREATE TABLE class(
@@ -36,7 +29,7 @@ CREATE TABLE subject(
 CREATE TABLE teacher(
   id BIGSERIAL NOT NULL PRIMARY KEY,
   fullName VARCHAR(100),
-  degree ENUM('Oliy','1-toifa','2-toifa','3-toifa') NOT NULL,
+  degree VARCHAR(10)  NOT NULL CHECK(degree IN ('Oliy','1-toifa','2-toifa','3-toifa')),
   exprience INT,
   username VARCHAR(16) NOT NULL,
   password VARCHAR(13) NOT NULL ChECK(length(password)>=8),
@@ -61,9 +54,9 @@ CREATE TABLE parents (
 
 CREATE TABLE lesson_table(
   id BIGSERIAL NOT NULL PRIMARY  KEY,
-  lesson_time ENUM("8.30","9.50","11.20"),
+  lesson_time varchar(10) NOT NULL CHECK(lesson_time IN ('8.30','9.50','11.20')),
   teacher_id BIGINT REFERENCES teacher(id) NOT NULL,
-  classRoom_id BIGINT REFERENCES classRoom(id) NOT NULL,
+  classRoom_id BIGINT REFERENCES classRoom(id) NOT NULL
 );
 
 CREATE TABLE student(
@@ -81,11 +74,11 @@ CREATE TABLE mark(
   id BIGSERIAL NOT NULL PRIMARY KEY,
   value INT NOT NULL,
   task_id BIGINT REFERENCES task(id) NOT NULL,
-  student_id BIGINT REFERENCES student(id) NOT NULL,
+  student_id BIGINT REFERENCES student(id) NOT NULL
 );
 
 CREATE TABLE attendance(
-  id BIGSERIAL NOT NULL PRIMARY KEY <
+  id BIGSERIAL NOT NULL PRIMARY KEY ,
   lesson_table_id BIGINT REFERENCES lesson_table(id) NOT NULL,
   has BOOLEAN NOT NULL
 );
