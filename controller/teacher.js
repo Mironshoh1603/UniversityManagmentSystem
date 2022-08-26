@@ -8,7 +8,7 @@ const Hashedfunction = async function (password) {
 
 const getAll = async (req, res) => {
   try {
-    const data = await pool.query("SELECT * FROM student;");
+    const data = await pool.query("SELECT * FROM teacher;");
     res.status(200).json({
       status: "Succes",
       data: data.rows,
@@ -32,13 +32,14 @@ const add = async (req, res) => {
     }
     req.body.password = await Hashedfunction(req.body.password);
     const data = await pool.query(
-      `INSERT INTO student(fullname,course,username,password,class_id) VALUES($1,$2,$3,$4,$5) RETURNING *`,
+      `INSERT INTO teacher(fullname,degree,exprience,username,password,subject_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
       [
         req.body.fullname,
-        req.body.course,
+        req.body.degree,
+        req.body.exprience,
         req.body.username,
         req.body.password,
-        req.body.class_id,
+        req.body.subject_id,
       ]
     );
     res.status(201).json({
@@ -54,9 +55,11 @@ const add = async (req, res) => {
 };
 const getOne = async (req, res) => {
   try {
-    const data = await pool.query(`SELECT * FROM student where id=$1`, [
+    const data = await pool.query(`SELECT * FROM teacher where id=$1`, [
       req.params.id,
     ]);
+    console.log(Boolean(data.rows));
+
     if (!data.rows) {
       res.status(200).json({
         status: "Succes",
@@ -77,17 +80,18 @@ const getOne = async (req, res) => {
 };
 const updateOne = async (req, res) => {
   try {
-    const oldData = await pool.query("SELECT * from student where id=$1", [
+    const oldData = await pool.query("SELECT * from teacher where id=$1", [
       req.params.id,
     ]);
     const data = await pool.query(
-      `Update student set fullname=$1,course=$2,username=$3,password=$4,class_id=$5 where id=$6 RETURNING *`,
+      `Update teacher set fullname=$1,degree=$2,exprience=$3,username=$4,password=$5,subject_id=$6 where id=$7 RETURNING *`,
       [
         req.body.fullname || oldData.rows[0].fullname,
-        req.body.course || oldData.rows[0].course,
+        req.body.degree || oldData.rows[0].degree,
+        req.body.exprience || oldData.rows[0].exprience,
         req.body.username || oldData.rows[0].username,
         req.body.password || oldData.rows[0].password,
-        req.body.class_id || oldData.rows[0].class_id,
+        req.body.subject_id || oldData.rows[0].subject_id,
         req.params.id,
       ]
     );
@@ -104,7 +108,7 @@ const updateOne = async (req, res) => {
 };
 const deleteOne = async (req, res) => {
   try {
-    const data = await pool.query(`DELETE FROM student  where id=$1 `, [
+    const data = await pool.query(`DELETE FROM teacher  where id=$1 `, [
       req.params.id,
     ]);
     res.status(204).json({

@@ -6,6 +6,7 @@ const subjectRouter = require("../routes/subject");
 const taskRouter = require("../routes/task");
 const parentRouter = require("../routes/parents");
 const studentRouter = require("../routes/student");
+const teacherRouter = require("../routes/teacher");
 
 const app = express();
 app.use(express.json());
@@ -16,5 +17,6 @@ app.use("/api/v1/subject/", subjectRouter);
 app.use("/api/v1/task/", taskRouter);
 app.use("/api/v1/parent/", parentRouter);
 app.use("/api/v1/student/", studentRouter);
+app.use("/api/v1/teacher/", teacherRouter);
 
 module.exports = app;
