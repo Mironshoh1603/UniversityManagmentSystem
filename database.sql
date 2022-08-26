@@ -63,7 +63,6 @@ CREATE TABLE student(
   id BIGSERIAL NOT NULL PRIMARY KEY,
   fullName VARCHAR(100) NOT NULL,
   course INT NOT NULL,
-  lesson_tables BIGINT [] REFERENCES lesson_table(id) NOT NULL,
   username VARCHAR(20) NOT NULL,
   password VARCHAR(13) NOT NULL ChECK(length(password)>=8),
   class_id BIGINT REFERENCES class(id) NOT NULL
@@ -84,3 +83,9 @@ CREATE TABLE attendance(
 );
 
 ALTER TABLE attendance ALTER COLUMN has SET DEFAULT TRUE; 
+
+CREATE TABLE daily(
+  id BIGSERIAL NOT NULL UNIQUE,
+  lesson_table_id BIGINT  REFERENCES lesson_table(id) NOT NULL UNIQUE,
+  student_id  BIGINT  REFERENCES student(id) NOT NULL
+)
