@@ -1,8 +1,21 @@
 const pool = require("../config/database");
+const bcrypt = require("bcryptjs");
+
+const Hashedfunction = async function (password) {
+  let hashPassword = await bcrypt.hash(password, 12);
+  return hashPassword;
+};
+
 const getAll = async (req, res) => {
   try {
-    const data = await pool.query("SELECT * FROM school;");
-
+    const data = await pool.query("SELECT * FROM parents;");
+    if (data.rows) {
+      res.status(200).json({
+        status: "Succes",
+        message: "BUnaqa foydalanuvchi mavjud emas",
+      });
+      return;
+    }
     res.status(200).json({
       status: "Succes",
       data: data.rows,
@@ -16,9 +29,18 @@ const getAll = async (req, res) => {
 };
 const add = async (req, res) => {
   try {
+    if (req.body.password.length <= 8) {
+      console.log("ishladi");
+      res.status(201).json({
+        status: "Succes",
+        message: "Siz 8 dan ko'proq belgi kiritishingiz lozim!",
+      });
+      return;
+    }
+    req.body.password = await Hashedfunction(req.body.password);
     const data = await pool.query(
-      `INSERT INTO school(name) VALUES($1) RETURNING *`,
-      [req.body.name]
+      `INSERT INTO parents(name,username,password) VALUES($1,$2,$3) RETURNING *`,
+      [req.body.name, req.body.username, req.body.password]
     );
     res.status(201).json({
       status: "Succes",
@@ -33,16 +55,9 @@ const add = async (req, res) => {
 };
 const getOne = async (req, res) => {
   try {
-    const data = await pool.query(`SELECT * FROM school where id=$1`, [
+    const data = await pool.query(`SELECT * FROM parents where id=$1`, [
       req.params.id,
     ]);
-    if (data.rows) {
-      res.status(200).json({
-        status: "Succes",
-        message: "BUnaqa foydalanuvchi mavjud emas",
-      });
-      return;
-    }
     res.status(201).json({
       status: "Succes",
       data: data.rows,
@@ -56,13 +71,18 @@ const getOne = async (req, res) => {
 };
 const updateOne = async (req, res) => {
   try {
-    const oldData = await pool.query("SELECT * from school where id=$1", [
+    const oldData = await pool.query("SELECT * from parents where id=$1", [
       req.params.id,
     ]);
     console.log(oldData.rows[0]);
     const data = await pool.query(
-      `Update school set name=$1 where id=$2 RETURNING *`,
-      [req.body.name || oldData.rows[0].name, req.params.id]
+      `Update parents set name=$1,username=$3,password=$2 where id=$4 RETURNING *`,
+      [
+        req.body.name || oldData.rows[0].name,
+        req.body.username || oldData.rows[0].username,
+        req.body.password || oldData.rows[0].password,
+        req.params.id,
+      ]
     );
     res.status(201).json({
       status: "Succes",
@@ -77,7 +97,7 @@ const updateOne = async (req, res) => {
 };
 const deleteOne = async (req, res) => {
   try {
-    const data = await pool.query(`DELETE FROM school  where id=$1 `, [
+    const data = await pool.query(`DELETE FROM parents  where id=$1 `, [
       req.params.id,
     ]);
     res.status(204).json({

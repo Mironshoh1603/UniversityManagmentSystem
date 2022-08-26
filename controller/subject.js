@@ -1,8 +1,7 @@
 const pool = require("../config/database");
 const getAll = async (req, res) => {
   try {
-    const data = await pool.query("SELECT * FROM school;");
-
+    const data = await pool.query("SELECT * FROM subject;");
     res.status(200).json({
       status: "Succes",
       data: data.rows,
@@ -17,8 +16,8 @@ const getAll = async (req, res) => {
 const add = async (req, res) => {
   try {
     const data = await pool.query(
-      `INSERT INTO school(name) VALUES($1) RETURNING *`,
-      [req.body.name]
+      `INSERT INTO subject(title,class_id) VALUES($1,$2) RETURNING *`,
+      [req.body.title, req.body.class_id]
     );
     res.status(201).json({
       status: "Succes",
@@ -33,7 +32,7 @@ const add = async (req, res) => {
 };
 const getOne = async (req, res) => {
   try {
-    const data = await pool.query(`SELECT * FROM school where id=$1`, [
+    const data = await pool.query(`SELECT * FROM subject where id=$1`, [
       req.params.id,
     ]);
     if (data.rows) {
@@ -56,13 +55,17 @@ const getOne = async (req, res) => {
 };
 const updateOne = async (req, res) => {
   try {
-    const oldData = await pool.query("SELECT * from school where id=$1", [
+    const oldData = await pool.query("SELECT * from subject where id=$1", [
       req.params.id,
     ]);
     console.log(oldData.rows[0]);
     const data = await pool.query(
-      `Update school set name=$1 where id=$2 RETURNING *`,
-      [req.body.name || oldData.rows[0].name, req.params.id]
+      `Update subject set title=$1,class_id=$2 where id=$3 RETURNING *`,
+      [
+        req.body.title || oldData.rows[0].title,
+        req.body.class_id || oldData.rows[0].class_id,
+        req.params.id,
+      ]
     );
     res.status(201).json({
       status: "Succes",
@@ -77,7 +80,7 @@ const updateOne = async (req, res) => {
 };
 const deleteOne = async (req, res) => {
   try {
-    const data = await pool.query(`DELETE FROM school  where id=$1 `, [
+    const data = await pool.query(`DELETE FROM subject  where id=$1 `, [
       req.params.id,
     ]);
     res.status(204).json({

@@ -35,6 +35,13 @@ const getOne = async (req, res) => {
     const data = await pool.query(`SELECT * FROM classRoom where id=$1`, [
       req.params.id,
     ]);
+    if (data.rows) {
+      res.status(200).json({
+        status: "Succes",
+        message: "BUnaqa foydalanuvchi mavjud emas",
+      });
+      return;
+    }
     res.status(201).json({
       status: "Succes",
       data: data.rows,
